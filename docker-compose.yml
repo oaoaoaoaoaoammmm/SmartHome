@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+
+  eureka-server:
+    container_name: eureka-server
+    image: eureka-server
+    ports:
+      - "8761:8761"
+    build:
+      context: 'Eureka Server'
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+  gateway-server:
+    container_name: gateway-server
+    image: gateway-server
+    ports:
+      - "8080:8080"
+    build:
+      context: 'Gateway Server'
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DISCOVERY_SERVER_URL: http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+
+  admin-server:
+    container_name: admin-server
+    image: admin-server
+    ports:
+      - "8085:8085"
+    build:
+      context: 'Admin Server'
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DISCOVERY_SERVER_URL: http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+
+  town-service:
+    container_name: town-service
+    image: town-service
+    build:
+      context: 'Town Service'
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVICE_PORT: 8081
+      DATA_BASE_USERNAME: username
+      DATA_BASE_PASSWORD: password
+      DATA_BASE_URL: jdbc:postgresql://data-base:5432/town_service
+      DISCOVERY_SERVER_URL: http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+      - data-base
+
+  town-service-2:
+    container_name: town-service-2
+    image: town-service
+    build:
+      context: 'Town Service'
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVICE_PORT: 8082
+      DATA_BASE_USERNAME: username
+      DATA_BASE_PASSWORD: password
+      DATA_BASE_URL: jdbc:postgresql://data-base:5432/town_service
+      DISCOVERY_SERVER_URL: http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+      - data-base
+
+  data-base:
+    container_name: data-base
+    image: postgres:14.7-alpine
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./Town Service/infrastructure/database.sql:/docker-entrypoint-initdb.d/database.sql
+#      - db-data:/var/lib/postgresql/data

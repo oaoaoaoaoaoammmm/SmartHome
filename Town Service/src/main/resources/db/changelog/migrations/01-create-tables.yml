@@ -1,0 +1,359 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-town-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: town
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: create-house-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: house
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: address
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: wall_thickness
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(wall_thickness >= 0.5 and wall_thickness <= 1.0)
+              - column:
+                  name: town_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: house
+            baseColumnNames: town_id
+            referencedTableSchemaName: application
+            referencedTableName: town
+            referencedColumnNames: id
+            constraintName: fk_town_house
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-counter-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: counter
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: value
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(value >= 0.0)
+              - column:
+                  name: communal_type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: house_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: counter
+            baseColumnNames: house_id
+            referencedTableSchemaName: application
+            referencedTableName: house
+            referencedColumnNames: id
+            constraintName: fk_house_counter
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-room-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: room
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: house_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: room
+            baseColumnNames: house_id
+            referencedTableSchemaName: application
+            referencedTableName: house
+            referencedColumnNames: id
+            constraintName: fk_house_room
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-electric-consumer-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: electric_consumer
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: time_last_switch_on
+                  type: timestamp
+              - column:
+                  name: time_last_switch_off
+                  type: timestamp
+              - column:
+                  name: electric_power
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(electric_power >= 0.0 and electric_power <= 100.0)
+              - column:
+                  name: electric_consumer_type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: counter_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: electric_consumer
+            baseColumnNames: counter_id
+            referencedTableSchemaName: application
+            referencedTableName: counter
+            referencedColumnNames: id
+            constraintName: fk_counter_electric_consumer
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-room-electric-consumers-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: room_electric_consumers
+            columns:
+              - column:
+                  name: room_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: electric_consumers_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: room_electric_consumers
+            baseColumnNames: room_id
+            referencedTableSchemaName: application
+            referencedTableName: room
+            referencedColumnNames: id
+            constraintName: fk_room_room_electric_consumers
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: room_electric_consumers
+            baseColumnNames: electric_consumers_id
+            referencedTableSchemaName: application
+            referencedTableName: electric_consumer
+            referencedColumnNames: id
+            constraintName: fk_electric_consumer_room_electric_consumers
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-receipt-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: receipt
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: payment
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: communal_type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: debt
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(debt >= 0.0)
+              - column:
+                  name: previous_counter_value
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(previous_counter_value >= 0.0)
+              - column:
+                  name: current_counter_value
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(current_counter_value >= 0.0)
+              - column:
+                  name: date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: house_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: receipt
+            baseColumnNames: house_id
+            referencedTableSchemaName: application
+            referencedTableName: house
+            referencedColumnNames: id
+            constraintName: fk_house_receipt
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-tariff-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: tariff
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: communal_type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(cost >= 0.0)
+              - column:
+                  name: town_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: tariff
+            baseColumnNames: town_id
+            referencedTableSchemaName: application
+            referencedTableName: town
+            referencedColumnNames: id
+            constraintName: fk_town_tariff
+            onDelete: CASCADE
+            onUpdate: CASCADE
+  - changeSet:
+      id: create-weather-table
+      author: d.afanasev
+      changes:
+        - createTable:
+            schemaName: application
+            tableName: weather
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValue: gen_random_uuid()
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: temperature
+                  type: double
+                  constraints:
+                    nullable: false
+                    checkConstraint: check(temperature >= -50.0 and temperature <= 50.0)
+              - column:
+                  name: town_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableSchemaName: application
+            baseTableName: weather
+            baseColumnNames: town_id
+            referencedTableSchemaName: application
+            referencedTableName: town
+            referencedColumnNames: id
+            constraintName: fk_town_weather
+            onDelete: CASCADE
+            onUpdate: CASCADE

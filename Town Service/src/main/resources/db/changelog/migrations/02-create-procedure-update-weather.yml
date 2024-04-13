@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-procedure-on-update-weather
+      author: d.afanasev
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            path: db/changelog/procedure.sql
+            splitStatements: false
+            stripComments: false
