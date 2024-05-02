@@ -5,6 +5,8 @@ import com.example.townservice.models.Counter
 import com.example.townservice.models.Receipt
 import com.example.townservice.repositories.ReceiptRepository
 import mu.KLogging
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -22,12 +24,14 @@ class ReceiptService(
     private val clockConfiguration: ClockConfiguration
 ) {
 
+    //@Cacheable(cacheNames = ["receiptsCache"])
     fun findPageReceiptsInHouse(houseId: UUID, pageable: Pageable): Page<Receipt> {
         logger.info { "Find page of receipts by house id - $houseId page number - ${pageable.pageNumber}" }
         return receiptRepository.findPageByHouseId(houseId, pageable)
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    //@CacheEvict(cacheNames = ["receiptsCache"], allEntries = true)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
     fun createReceipts(houseId: UUID): Collection<Receipt> {
         logger.info { "Create receipts for house by id - $houseId" }
         receiptRepository.callCalcCounterValue(houseId)
@@ -59,6 +63,7 @@ class ReceiptService(
         return receiptRepository.saveAll(receipts)
     }
 
+    //@CacheEvict(cacheNames = ["receiptsCache"], allEntries = true)
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     fun payReceipt(receiptId: UUID): Receipt {
         logger.info { "Pay receipt by id - $receiptId" }

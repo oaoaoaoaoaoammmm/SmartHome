@@ -6,6 +6,8 @@ import com.example.townservice.models.Weather
 import com.example.townservice.models.enumerations.CommunalType
 import com.example.townservice.repositories.TownRepository
 import mu.KLogging
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Propagation
@@ -19,11 +21,13 @@ class TownService(
     private val weatherService: WeatherService
 ) {
 
+    @Cacheable(cacheNames = ["townsCache"])
     fun findAllTowns(): Collection<Town> {
         logger.info { "Find towns" }
         return townRepository.findAll()
     }
 
+    @CacheEvict(cacheNames = ["townsCache"], allEntries = true)
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     fun addTown(town: Town): Town {
 
@@ -52,11 +56,14 @@ class TownService(
         return town
     }
 
+    @CacheEvict(cacheNames = ["townsCache"], allEntries = true)
     fun deleteTown(townId: UUID) {
         logger.info { "Delete town by id - $townId" }
         townRepository.deleteById(townId)
     }
 
+
+    @Cacheable(cacheNames = ["townsCache"])
     fun findTown(townId: UUID): Town {
         logger.info { "Find town by id - $townId" }
         return townRepository.findById(townId)

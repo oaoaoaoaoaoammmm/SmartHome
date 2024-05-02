@@ -3,6 +3,8 @@ package com.example.townservice.services
 import com.example.townservice.models.Weather
 import com.example.townservice.repositories.WeatherRepository
 import mu.KLogging
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Propagation
@@ -14,6 +16,7 @@ class WeatherService(
     private val weatherRepository: WeatherRepository
 ) {
 
+    @Cacheable(cacheNames = ["weatherCache"], key = "#townId")
     fun findWeatherByTown(townId: UUID): Weather {
         logger.info { "Find weather by town id - $townId" }
         return weatherRepository.findWeatherByTownId(townId)
@@ -31,7 +34,8 @@ class WeatherService(
         return weatherRepository.save(weather)
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    @CacheEvict(cacheNames = ["weatherCache"], key = "#townId", allEntries = true)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
     fun updateWeatherTemperature(townId: UUID, weather: Weather): Weather {
         logger.info { "Update weather by town id - $townId weather - $weather" }
         val newWeather = findWeatherByTown(townId)

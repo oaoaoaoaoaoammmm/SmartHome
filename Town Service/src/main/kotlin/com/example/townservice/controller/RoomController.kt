@@ -54,7 +54,7 @@ class RoomController(
 
     @Operation(summary = "Switch a electric consumer")
     @PatchMapping("$LIGHT_SWITCHERS/{elConsumerId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.RESET_CONTENT)
     fun switchLightSwitcher(
         @PathVariable @NotNull elConsumerId: UUID,
         @NotNull @Parameter(name = "newPower", required = true) newPower: Double,

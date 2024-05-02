@@ -9,6 +9,8 @@ import com.example.townservice.models.enumerations.CommunalType
 import com.example.townservice.models.enumerations.ElectricConsumerType
 import com.example.townservice.repositories.HouseRepository
 import mu.KLogging
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -27,17 +29,19 @@ class HouseService(
     private val houseRepository: HouseRepository,
     private val clockConfiguration: ClockConfiguration
 ) {
-
     fun findAllHousesInTown(townId: UUID): Collection<House> {
         logger.info { "Find houses in a town by id - $townId" }
         return houseRepository.findAllByTownId(townId)
     }
 
+    @Cacheable(cacheNames = ["housesCache"])
     fun findPageHousesInTown(townId: UUID, pageable: Pageable): Page<House> {
         logger.info { "Find a page of houses by town id - $townId" }
         return houseRepository.findAllByTownId(townId, pageable)
     }
 
+
+    @CacheEvict(cacheNames = ["housesCache"], allEntries = true)
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     fun addHouseInTown(townId: UUID, house: House, roomCount: Int): House {
         logger.info { "Add a house in a town by id - $townId, house - $house room count - $roomCount" }
@@ -87,11 +91,13 @@ class HouseService(
         return house
     }
 
+    @CacheEvict(cacheNames = ["housesCache"], allEntries = true)
     fun deleteHouse(houseId: UUID) {
         logger.info { "Delete a house by id - $houseId" }
         houseRepository.deleteById(houseId)
     }
 
+    @Cacheable(cacheNames = ["housesCache"])
     fun findHouse(houseId: UUID): House {
         logger.info { "Find a house by id - $houseId" }
         return houseRepository.findById(houseId)

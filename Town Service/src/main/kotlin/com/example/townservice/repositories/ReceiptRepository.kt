@@ -29,5 +29,5 @@ interface ReceiptRepository :
     fun findReceiptByCommunalTypeAndByHouseIdAndLaterDate(house: House, communalType: CommunalType): Optional<Receipt>
 
     @Procedure(procedureName = "calc_counter_value")
-    fun callCalcCounterValue(houseTownId: UUID): Void
+    fun callCalcCounterValue(houseId: UUID): Void
 }

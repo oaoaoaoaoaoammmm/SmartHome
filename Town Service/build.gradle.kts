@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
+    id("io.gatling.gradle") version "3.10.2" // loadtest
 
     kotlin("jvm") version "1.9.22"
     kotlin("kapt") version "1.9.22"
@@ -12,6 +13,8 @@ plugins {
 
     // empty constructors and open models
     kotlin("plugin.jpa") version "1.9.22"
+
+
 }
 
 allOpen {
@@ -39,11 +42,13 @@ val mockitoKotlinVersion by extra("5.2.1")
 val kLoggingVersion by extra("2.0.11")
 val logbackVersion by extra("1.4.14")
 val liquibaseFixVersion by extra("1.5.0")
+val gatlingVersion by extra("3.10.2")
 
 dependencies {
 
     //spring modules
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
@@ -81,6 +86,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+
+    // load test
+    implementation("io.gatling.highcharts:gatling-charts-highcharts:$gatlingVersion")
+    implementation("io.gatling:gatling-app:$gatlingVersion")
+    implementation("io.gatling:gatling-core:$gatlingVersion")
 }
 
 

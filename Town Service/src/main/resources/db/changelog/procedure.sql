@@ -1,4 +1,4 @@
-create or replace function DateDiff(units varchar(30), start_t timestamp, end_t timestamp)
+create or replace function public.DateDiff(units varchar(30), start_t timestamp, end_t timestamp)
     returns int as
 $$
 declare
@@ -47,7 +47,7 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace procedure calc_new_consumer_power_and_counter_value(weather_town_id uuid, new_temp double precision)
+create or replace procedure public.calc_new_consumer_power_and_counter_value(weather_town_id uuid, new_temp double precision)
     language plpgsql
 as
 $$
@@ -129,7 +129,7 @@ begin
 end;
 $$;
 
-create or replace procedure calc_counter_value(houseId uuid)
+create or replace procedure public.calc_counter_value(houseId uuid)
     language plpgsql
 as
 $$

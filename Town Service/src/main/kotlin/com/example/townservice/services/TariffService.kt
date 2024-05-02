@@ -5,6 +5,8 @@ import com.example.townservice.models.Town
 import com.example.townservice.models.enumerations.CommunalType
 import com.example.townservice.repositories.TariffRepository
 import mu.KLogging
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Propagation
@@ -21,11 +23,14 @@ class TariffService(
         return tariffRepository.findAll()
     }
 
+    @Cacheable(cacheNames = ["tariffsCache"])
     fun findTariffsByTown(townId: UUID): Collection<Tariff> {
         logger.info { "Find tariffs by town id - $townId" }
         return tariffRepository.findByTownId(townId)
     }
 
+
+    @CacheEvict(cacheNames = ["tariffsCache"], allEntries = true)
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     fun updateTariff(tariffId: UUID, tariff: Tariff): Tariff {
         logger.info { "Update tariff by id - $tariffId tariff - $tariff" }
@@ -39,6 +44,7 @@ class TariffService(
         return oldTariff
     }
 
+    @CacheEvict(cacheNames = ["tariffsCache"], allEntries = true)
     fun saveTariffs(tariffs: Collection<Tariff>): Collection<Tariff> {
         logger.info { "Save tariffs - $tariffs" }
         return tariffRepository.saveAll(tariffs)
@@ -50,6 +56,7 @@ class TariffService(
             .orElseThrow { throw NoSuchElementException("Can't find a tariff") }
     }
 
+    @Cacheable(cacheNames = ["tariffsCache"])
     fun findTariffByTypeAndTown(tariffType: CommunalType, town: Town): Tariff {
         logger.info { "Find tariff by town - $town tariff type - $tariffType" }
         return tariffRepository.findByCommunalTypeAndTown(tariffType, town)

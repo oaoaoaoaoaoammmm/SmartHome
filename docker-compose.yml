@@ -75,9 +75,28 @@ services:
       - eureka-server
       - data-base
 
+#  town-service-3:
+#    container_name: town-service-3
+#    image: town-service
+#    build:
+#      context: 'Town Service'
+#      dockerfile: Dockerfile
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+#      SERVICE_PORT: 8083
+#      DATA_BASE_USERNAME: username
+#      DATA_BASE_PASSWORD: password
+#      DATA_BASE_URL: jdbc:postgresql://data-base:5432/town_service
+#      DISCOVERY_SERVER_URL: http://eureka-server:8761/eureka
+#    depends_on:
+#      - eureka-server
+#      - data-base
+
   data-base:
     container_name: data-base
     image: postgres:14.7-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
