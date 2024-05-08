@@ -132,16 +132,16 @@ class StressSimulation : Simulation() {
     init {
         this
             .setUp(
-                getTownsRequest.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getWeatherByTownRequest.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getTariffsByTownRequest.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getHousesByTownRequest.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getHouseByIdRequest.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getCountersByHouseRequest.injectOpen(rampUsers(150).during(Duration.ofSeconds(2))),
-                getReceiptsByHouse.injectOpen(rampUsers(150).during(Duration.ofSeconds(2))),
-                getRoomsByHouse.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                getRoomById.injectOpen(rampUsers(375).during(Duration.ofSeconds(2))),
-                switchElectricConsumer.injectOpen(rampUsers(375).during(Duration.ofSeconds(2)))
+                getTownsRequest.injectOpen(rampUsers(1650).during(Duration.ofSeconds(18))),
+                getWeatherByTownRequest.injectOpen(rampUsers(1650).during(Duration.ofSeconds(18))),
+                getTariffsByTownRequest.injectOpen(rampUsers(1600).during(Duration.ofSeconds(18))),
+                getHousesByTownRequest.injectOpen(rampUsers(1600).during(Duration.ofSeconds(18))),
+                getHouseByIdRequest.injectOpen(rampUsers(1600).during(Duration.ofSeconds(18))),
+                getCountersByHouseRequest.injectOpen(rampUsers(1000).during(Duration.ofSeconds(18))),
+                getReceiptsByHouse.injectOpen(rampUsers(1600).during(Duration.ofSeconds(18))),
+                getRoomsByHouse.injectOpen(rampUsers(1600).during(Duration.ofSeconds(18))),
+                getRoomById.injectOpen(rampUsers(1700).during(Duration.ofSeconds(18))),
+                switchElectricConsumer.injectOpen(rampUsers(1000).during(Duration.ofSeconds(18)))
             )
             .protocols(httpProtocol)
     }
