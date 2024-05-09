@@ -14,7 +14,7 @@ class CounterService(
     private val counterRepository: CounterRepository
 ) {
 
-    @Cacheable(cacheNames = ["countersCache"])
+    //@Cacheable(cacheNames = ["countersCache"])
     fun findAllCountersInHouse(houseId: UUID):Collection<Counter> {
         logger.info { "Find counters in a house id - $houseId" }
         counterRepository.callCalcCounterValue(houseId)
@@ -33,7 +33,7 @@ class CounterService(
             .orElseThrow { throw NoSuchElementException("Can't find counter") }
     }
 
-    @CacheEvict(cacheNames = ["countersCache"], allEntries = true)
+    //@CacheEvict(cacheNames = ["countersCache"], allEntries = true)
     fun addCounters(counters: Collection<Counter>): Collection<Counter> {
         logger.info { "Add counters - $counters" }
         return counterRepository.saveAll(counters)

@@ -13,20 +13,20 @@ class RoomService(
     private val roomRepository: RoomRepository,
 ) {
 
-    @Cacheable(cacheNames = ["roomsCache"])
+    //@Cacheable(cacheNames = ["roomsCache"])
     fun findAllRoomsInHouse(houseId: UUID): Collection<Room> {
         logger.info { "Find rooms in a house - $houseId" }
         return roomRepository.findAllByHouseId(houseId)
     }
 
-    @Cacheable(cacheNames = ["roomsCache"])
+    //@Cacheable(cacheNames = ["roomsCache"])
     fun findRoom(roomId: UUID): Room {
         logger.info { "Find room by id - $roomId" }
         return roomRepository.findById(roomId)
             .orElseThrow { throw NoSuchElementException("Can't find room") }
     }
 
-    @CacheEvict(cacheNames = ["roomsCache"], allEntries = true)
+    //@CacheEvict(cacheNames = ["roomsCache"], allEntries = true)
     fun addRooms(rooms: Collection<Room>): Collection<Room> {
         logger.info { "Add rooms - $rooms" }
         return roomRepository.saveAll(rooms)
